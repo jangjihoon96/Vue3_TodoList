@@ -1,5 +1,5 @@
 <template>
-  <div>통계 탭</div>
+  <div class="container">통계 탭</div>
 </template>
 
 <script>
