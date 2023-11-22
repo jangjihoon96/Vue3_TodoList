@@ -1,12 +1,5 @@
 import { createStore } from "vuex";
-
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth() + 1;
-const day = today.getDate();
-
-const zeroDay = ("00" + day).slice(-2);
-const zeroMonth = ("00" + month).slice(-2);
+import dayjs from "dayjs";
 
 const store = createStore({
   state() {
@@ -16,12 +9,12 @@ const store = createStore({
       showAddTodo: false,
       titleValue: "제목을 입력하세요",
       descriptionValue: "설명을 입력하세요",
-      dateValue: `${year}.${zeroMonth}.${zeroDay}`,
+      selectedDate: dayjs().format("YYYY.MM.DD"),
       progressValue: "진행전",
       todo: [],
       editTitle: "",
       editDescription: "",
-      editDateValue: "",
+      editDate: "",
     };
   },
   mutations: {
@@ -54,42 +47,18 @@ const store = createStore({
       }
       state.descriptionValue = payload;
     },
-    handleDateValue(state, payload) {
-      if (payload) {
-        const year = payload.getFullYear();
-        const month = payload.getMonth() + 1;
-        const day = payload.getDate();
-
-        // 날짜 앞에 0을 붙여야 하는 경우
-        if (month || day < 10) {
-          const zeroDay = ("00" + day).slice(-2);
-          const zeroMonth = ("00" + month).slice(-2);
-
-          state.dateValue = `${year}.${zeroMonth}.${zeroDay}`;
-        } else {
-          state.dateValue = `${year}.${month}.${day}`;
-        }
-      } else {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
-        const day = today.getDate();
-
-        const zeroDay = ("00" + day).slice(-2);
-        const zeroMonth = ("00" + month).slice(-2);
-
-        state.dateValue = `${year}.${zeroMonth}.${zeroDay}`;
-      }
-    },
     handleProgressValue(state, payload) {
       state.progressValue = payload;
+    },
+    updateSelectedDate(state, newDate) {
+      state.selectedDate = newDate;
     },
     handleAddTodo(state) {
       let newTodo = {
         id: state.todo.length + 1,
         title: state.titleValue,
         description: state.descriptionValue,
-        date: state.dateValue,
+        selectedDate: state.selectedDate,
         progress: state.progressValue,
         edit: false,
       };
@@ -98,7 +67,7 @@ const store = createStore({
       state.titleValue = "";
       state.descriptionValue = "";
       state.progressValue = "진행전";
-      state.dateValue = `${year}.${zeroMonth}.${zeroDay}`;
+      state.selectedDate = dayjs().format("YYYY-MM-DD");
       if (state.titleValue === "") {
         state.titleValue = "제목을 입력하세요.";
       }
@@ -106,8 +75,12 @@ const store = createStore({
         state.descriptionValue = "설명을 입력하세요.";
       }
     },
+    updateDate(state, payload) {
+      const { event } = payload;
+      state.editDate = event.target.value;
+    },
     handleOpenEdit(state, payload) {
-      const { id, title, description, date } = payload;
+      const { id, title, description } = payload;
       const allTodo = state.todo;
       const todoToEdit = state.todo.find((todo) => todo.id === id);
       allTodo.forEach((todo) => {
@@ -116,7 +89,6 @@ const store = createStore({
       todoToEdit.edit = true;
       state.editTitle = title;
       state.editDescription = description;
-      state.editDateValue = date;
     },
     handleCancelEdit(state, payload) {
       const { id } = payload;
@@ -141,41 +113,13 @@ const store = createStore({
       }
       state.editDescription = payload.value;
     },
-    handleEditDateValue(state, payload) {
-      const { date } = payload;
-      if (date) {
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-
-        // 날짜 앞에 0을 붙여야 하는 경우
-        if (month || day < 10) {
-          const zeroDay = ("00" + day).slice(-2);
-          const zeroMonth = ("00" + month).slice(-2);
-
-          state.editDateValue = `${year}.${zeroMonth}.${zeroDay}`;
-        } else {
-          state.editDateValue = `${year}.${month}.${day}`;
-        }
-      } else {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
-        const day = today.getDate();
-
-        const zeroDay = ("00" + day).slice(-2);
-        const zeroMonth = ("00" + month).slice(-2);
-
-        state.editDateValue = `${year}.${zeroMonth}.${zeroDay}`;
-      }
-    },
     handleEditComplete(state, payload) {
       const { id } = payload;
       const todoToEdit = state.todo.find((todo) => todo.id === id);
       if (todoToEdit) {
         todoToEdit.title = state.editTitle;
         todoToEdit.description = state.editDescription;
-        todoToEdit.date = state.editDateValue;
+        todoToEdit.selectedDate = state.editDate;
       }
       todoToEdit.edit = false;
     },

@@ -32,23 +32,14 @@
       </button>
       <form v-if="$store.state.showAddTodo == true" class="input-card">
         <h2>Add Todo</h2>
-        <!-- <VueDatePicker
-          class="date-picker"
-          calendar-class="date-picker"
-          v-model="picked"
-          placeholder="날짜를 선택해주세요."
-          :enable-time-picker="false"
-          :format="formatDate"
-          @update:model-value="$store.commit('handleDateValue', picked)"
-        /> -->
-        <VueDatePicker
-          class="date-picker"
-          calendar-class="date-picker"
-          v-model="date"
-          placeholder="날짜를 선택해주세요."
-          :enable-time-picker="false"
-          @update:model-value="$store.commit('handleDateValue', date)"
-        />
+        <div class="date-picker">
+          <input
+            class="datejs-input"
+            type="date"
+            v-model="$store.state.selectedDate"
+            :placeholder="$store.state.selectedDate"
+          />
+        </div>
         <select
           name="filter"
           id="addFilter"
@@ -101,7 +92,7 @@
                 id: todos.id,
                 title: todos.title,
                 description: todos.description,
-                date: todos.date,
+                selectedDate: todos.selectedDate,
               })
             "
           >
@@ -109,7 +100,9 @@
             <p class="card-description contents-gray">
               {{ todos.description }}
             </p>
-            <span class="card-date contents-lightgray">{{ todos.date }}</span>
+            <span class="card-date contents-lightgray">{{
+              todos.selectedDate
+            }}</span>
             <span
               class="card-state"
               :class="{
@@ -152,18 +145,16 @@
               />
             </div>
             <span class="edit-date">
-              <VueDatePicker
-                class="date-picker"
-                calendar-class="date-picker"
-                v-model="todos.date"
-                placeholder="날짜를 선택해주세요."
-                :enable-time-picker="false"
-                @update:model-value="
-                  $store.commit('handleEditDateValue', {
-                    date: todos.date,
-                  })
-                "
-              />
+              <div class="date-picker">
+                <input
+                  class="datejs-input"
+                  type="date"
+                  :value="todos.selectedDate"
+                  @input="
+                    $store.commit('updateDate', { event: $event, id: todos.id })
+                  "
+                />
+              </div>
             </span>
             <select
               class="edit-state contents-primary"
@@ -200,15 +191,8 @@
     </div>
   </div>
 </template>
-<script setup>
-import { ref } from "vue";
-const date = ref(new Date());
-</script>
 <script>
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
 export default {
-  components: { VueDatePicker },
   name: "TabList",
 };
 </script>
@@ -312,14 +296,26 @@ export default {
 .input-card .input:hover {
   border: 1px solid #aaaeb7;
 }
-.input-card .dp__input {
+
+.input-card .date-picker {
+  width: calc(100% - 110px);
   height: 30px;
   padding-top: 0;
   padding-bottom: 0;
   font-size: 12px;
 }
-.input-card .date-picker {
-  width: calc(100% - 110px);
+.datejs-input {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  transition: all 0.2s;
+  padding: 0 10px;
+  color: #111111;
+}
+.datejs-input:hover {
+  border: 1px solid #aaaeb7;
 }
 .input-card .button {
   width: calc(50% - 5px);
@@ -488,7 +484,7 @@ export default {
   top: 20px;
   right: 16px;
 }
-.edit-date .dp__input {
+.edit-date .date-picker {
   width: 140px;
   height: 30px;
   padding-top: 0;
