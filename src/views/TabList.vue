@@ -1,11 +1,23 @@
 <template>
   <div class="container">
     <form class="filter-form">
-      <select name="filter" id="filter">
-        <option value="title" selected>제목</option>
-        <option value="description">설명</option>
-        <option value="state">상태</option>
-        <option value="date">날짜</option>
+      <select
+        name="filter"
+        id="filter"
+        @change="$store.commit('handleCategory', $event.target.value)"
+      >
+        <option value="제목" :selected="$store.state.category === '제목'">
+          제목
+        </option>
+        <option value="설명" :selected="$store.state.category === '설명'">
+          설명
+        </option>
+        <option value="상태" :selected="$store.state.category === '상태'">
+          상태
+        </option>
+        <option value="날짜" :selected="$store.state.category === '날짜'">
+          날짜
+        </option>
       </select>
       <input type="text" placeholder="검색어를 입력하세요." />
       <button>검색</button>

@@ -12,6 +12,7 @@ const store = createStore({
   state() {
     return {
       tab: 1,
+      category: "제목",
       showAddTodo: false,
       titleValue: "제목을 입력하세요",
       descriptionValue: "설명을 입력하세요",
@@ -29,6 +30,11 @@ const store = createStore({
     },
     handleTabStet(state) {
       state.tab = 2;
+    },
+    handleCategory(state, payload) {
+      console.log(state.category);
+      console.log(payload);
+      state.category = payload;
     },
     changeShowAddTodo(state) {
       state.showAddTodo = true;
