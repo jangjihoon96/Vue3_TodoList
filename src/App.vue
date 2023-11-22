@@ -43,6 +43,7 @@ ol,
 li {
   list-style: none;
 }
+select,
 button {
   cursor: pointer;
 }

@@ -20,7 +20,7 @@
       </button>
       <form v-if="$store.state.showAddTodo == true" class="input-card">
         <h2>Add Todo</h2>
-        <VueDatePicker
+        <!-- <VueDatePicker
           class="date-picker"
           calendar-class="date-picker"
           v-model="picked"
@@ -28,6 +28,14 @@
           :enable-time-picker="false"
           :format="formatDate"
           @update:model-value="$store.commit('handleDateValue', picked)"
+        /> -->
+        <VueDatePicker
+          class="date-picker"
+          calendar-class="date-picker"
+          v-model="date"
+          placeholder="날짜를 선택해주세요."
+          :enable-time-picker="false"
+          @update:model-value="$store.commit('handleDateValue', date)"
         />
         <select
           name="filter"
@@ -73,53 +81,123 @@
           :key="todos.id"
           class="todo-card"
         >
-          <h2 class="card-title contents-black">{{ todos.title }}</h2>
-          <p class="card-description contents-gray">
-            {{ todos.description }}
-          </p>
-          <span class="card-date contents-lightgray">{{ todos.date }}</span>
-          <span class="card-state">{{ todos.progress }}</span>
+          <div
+            v-if="todos.edit === false"
+            class="todo-card-content"
+            @click="
+              $store.commit('handleOpenEdit', {
+                id: todos.id,
+                title: todos.title,
+                description: todos.description,
+                date: todos.date,
+              })
+            "
+          >
+            <h2 class="card-title contents-black">{{ todos.title }}</h2>
+            <p class="card-description contents-gray">
+              {{ todos.description }}
+            </p>
+            <span class="card-date contents-lightgray">{{ todos.date }}</span>
+            <span
+              class="card-state"
+              :class="{
+                complete: todos.progress === '완료',
+                proceeding: todos.progress === '진행중',
+                before: todos.progress === '진행전',
+              }"
+              >{{ todos.progress }}</span
+            >
+          </div>
+          <form v-if="todos.edit === true" class="edit-todo">
+            <div class="vertical">
+              <input
+                type="text"
+                name="title"
+                class="edit-title"
+                placeholder="수정할 제목을 작성하세요."
+                :value="todos.title"
+                @change="
+                  $store.commit('handleEditTitle', {
+                    value: $event.target.value,
+                    id: todos.id,
+                    title: todos.title,
+                  })
+                "
+              />
+              <input
+                type="text"
+                name="description"
+                class="edit-description"
+                placeholder="수정할 설명을 작성하세요."
+                :value="todos.description"
+                @change="
+                  $store.commit('handleEditDescription', {
+                    value: $event.target.value,
+                    id: todos.id,
+                    description: todos.description,
+                  })
+                "
+              />
+            </div>
+            <span class="edit-date">
+              <VueDatePicker
+                class="date-picker"
+                calendar-class="date-picker"
+                v-model="todos.date"
+                placeholder="날짜를 선택해주세요."
+                :enable-time-picker="false"
+                @update:model-value="
+                  $store.commit('handleEditDateValue', {
+                    date: todos.date,
+                  })
+                "
+              />
+            </span>
+            <select
+              class="edit-state contents-primary"
+              v-model="todos.progress"
+            >
+              <option :value="`진행전`" :selected="todos.progress === '진행전'">
+                진행전
+              </option>
+              <option :value="`진행중`" :selected="todos.progress === '진행중'">
+                진행중
+              </option>
+              <option :value="`완료`" :selected="todos.progress === '완료'">
+                완료
+              </option>
+            </select>
+            <button
+              @click.prevent="
+                $store.commit('handleEditComplete', { id: todos.id })
+              "
+              class="edit-complete-button in-edit-button contents-white"
+            >
+              수정완료
+            </button>
+            <button
+              @click="$store.commit('handleCancelEdit', { id: todos.id })"
+              class="edit-cancel-button in-edit-button contents-white"
+            >
+              취소
+            </button>
+          </form>
+          <span class="line" aria-hidden="true"></span>
         </li>
       </ul>
     </div>
   </div>
 </template>
+<script setup>
+import { ref } from "vue";
+const date = ref(new Date());
+</script>
 <script>
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { ref } from "vue";
 export default {
   components: { VueDatePicker },
   name: "TabList",
-  date() {
-    return {
-      date: null,
-    };
-  },
-  setup() {
-    const picked = ref(new Date());
-
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-
-      // 날짜 앞에 0을 붙여야 하는 경우
-      if (month || day < 10) {
-        const zeroDay = ("00" + day).slice(-2);
-        const zeroMonth = ("00" + month).slice(-2);
-
-        return `${year}.${zeroMonth}.${zeroDay}`;
-      } else {
-        return `${year}.${month}.${day}`;
-      }
-    };
-    // expose to template and other options API hooks
-    return {
-      picked,
-      formatDate,
-    };
-  },
 };
 </script>
 
@@ -252,16 +330,31 @@ export default {
 .input-card .cancel-button:hover {
   background-color: rgba(118, 118, 118, 0.8);
 }
-.todo-card {
+/* .todo-card {
+} */
+.todo-card-content {
   display: flex;
   flex-flow: column nowrap;
   position: relative;
-  min-height: 89px;
-  padding: 20px 12px;
-  border-bottom: 1px solid #e7e7e7;
+  min-height: 80px;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 20px 16px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
 }
-.todo-card:last-child {
-  border-bottom: none;
+.todo-card-content:hover {
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+}
+.todo-card .line {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: #e7e7e7;
+}
+.todo-card:last-child .line {
+  display: none;
 }
 .card-title,
 .card-description {
@@ -271,11 +364,13 @@ export default {
   text-overflow: ellipsis;
 }
 .card-title {
+  min-height: 22px;
   font-weight: 700;
   font-size: 16px;
   text-align: left;
 }
 .card-description {
+  min-height: 19px;
   font-weight: 400;
   margin-top: 8px;
   font-size: 14px;
@@ -288,11 +383,114 @@ export default {
 .card-date {
   font-size: 12px;
   top: 20px;
-  right: 12px;
+  right: 16px;
 }
 .card-state {
-  font-size: 14px;
+  width: 50px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 12px;
   bottom: 20px;
-  right: 12px;
+  right: 16px;
+  color: #ffffff;
+}
+.card-state.before {
+  background-color: #e67979;
+}
+.card-state.proceeding {
+  background-color: #c4a21c;
+}
+.card-state.complete {
+  background-color: #20b720;
+}
+.edit-todo {
+  display: flex;
+  flex-flow: row wrap;
+  position: relative;
+  min-height: 80px;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 20px 16px;
+  border-radius: 8px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+}
+.edit-todo .vertical {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  gap: 10px;
+}
+.in-edit-button {
+  width: calc(50% - 5px);
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.edit-complete-button {
+  background-color: rgba(255, 134, 0, 1);
+}
+.edit-cancel-button {
+  background-color: rgba(118, 118, 118, 1);
+}
+.edit-complete-button:hover {
+  background-color: rgba(255, 134, 0, 0.8);
+}
+.edit-cancel-button:hover {
+  background-color: rgba(118, 118, 118, 0.8);
+}
+
+.edit-title,
+.edit-description {
+  width: calc(100% - 150px);
+  height: 30px;
+}
+.edit-title {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 0 12px;
+  transition: all 0.2s;
+}
+.edit-description {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 0 12px;
+  transition: all 0.2s;
+}
+.edit-title:hover,
+.edit-description:hover {
+  border: 1px solid #aaaeb7;
+}
+.edit-date,
+.edit-state {
+  position: absolute;
+}
+.edit-date {
+  font-size: 12px;
+  top: 20px;
+  right: 16px;
+}
+.edit-date .dp__input {
+  width: 140px;
+  height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 12px;
+}
+.edit-state {
+  width: 140px;
+  height: 30px;
+  border-radius: 4px;
+  padding: 0 4px;
+  border: 1px solid #ff8600;
+  font-size: 14px;
+  bottom: 60px;
+  right: 16px;
 }
 </style>
