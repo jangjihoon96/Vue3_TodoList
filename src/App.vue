@@ -5,7 +5,9 @@
       <button
         class="tab-button list-button"
         :class="$store.state.tab === 1 ? 'active' : null"
-        @click="[$router.push('/list'), $store.commit('handleTabList')]"
+        @click="
+          $router.push('/list').then(() => $store.commit('handleTabList'))
+        "
       >
         목록 탭
       </button>
@@ -14,7 +16,12 @@
       <button
         class="tab-button stet-button"
         :class="$store.state.tab === 2 ? 'active' : null"
-        @click="[$router.push('/stet'), $store.commit('handleTabStet')]"
+        @click="
+          $router
+            .push('/stet')
+            .then(() => $store.commit('handleTabStet'))
+            .then(() => $store.commit('handleLineChartData'))
+        "
       >
         통계 탭
       </button>
@@ -97,5 +104,6 @@ h1 {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  position: relative;
 }
 </style>

@@ -9,12 +9,15 @@ const store = createStore({
       showAddTodo: false,
       titleValue: "제목을 입력하세요",
       descriptionValue: "설명을 입력하세요",
-      selectedDate: dayjs().format("YYYY.MM.DD"),
+      selectedDate: dayjs().format("YYYY-MM-DD"),
       progressValue: "진행전",
       todo: [],
       editTitle: "",
       editDescription: "",
       editDate: "",
+      sortTodo: [],
+      lineChartCategories: [],
+      lineChartData: [],
     };
   },
   mutations: {
@@ -122,6 +125,30 @@ const store = createStore({
         todoToEdit.selectedDate = state.editDate;
       }
       todoToEdit.edit = false;
+    },
+    handleLineChartData(state) {
+      function convertToDate(dateString) {
+        const parts = dateString.split("-");
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      }
+      const arr = state.todo;
+      arr.sort((a, b) => {
+        const dateA = convertToDate(a.selectedDate);
+        const dateB = convertToDate(b.selectedDate);
+        return dateA - dateB;
+      });
+      state.sortTodo = [...arr];
+      console.log(arr);
+      let countedDates = state.sortTodo.reduce((acc, curr) => {
+        if (acc[curr.selectedDate]) {
+          acc[curr.selectedDate] += 1;
+        } else {
+          acc[curr.selectedDate] = 1;
+        }
+        return acc;
+      }, {});
+      state.lineChartCategories = [...Object.keys(countedDates)];
+      state.lineChartData = [...Object.values(countedDates)];
     },
   },
 });
