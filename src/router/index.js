@@ -6,8 +6,8 @@ import TabStet from "../views/TabStet";
 
 // 라우터 설계
 const routes = [
-  { path: "/list", component: TabList },
-  { path: "/stet", component: TabStet },
+  { path: "/Vue3_Todolist_Deploy", component: TabList },
+  { path: "/Vue3_Todolist_Deploy/stet", component: TabStet },
 ];
 
 // 라우터 생성

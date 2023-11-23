@@ -6,5 +6,4 @@ import VueApexCharts from "vue3-apexcharts";
 
 const app = createApp(App);
 
-app.use(router);
-app.use(store).use(VueApexCharts).mount("#app");
+app.use(router).use(store).use(VueApexCharts).mount("#app");

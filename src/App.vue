@@ -6,7 +6,9 @@
         class="tab-button list-button"
         :class="$store.state.tab === 1 ? 'active' : null"
         @click="
-          $router.push('/list').then(() => $store.commit('handleTabList'))
+          $router
+            .push('/Vue3_Todolist_Deploy')
+            .then(() => $store.commit('handleTabList'))
         "
       >
         목록 탭
@@ -18,7 +20,7 @@
         :class="$store.state.tab === 2 ? 'active' : null"
         @click="
           $router
-            .push('/stet')
+            .push('/Vue3_Todolist_Deploy/stet')
             .then(() => $store.commit('handleTabStet'))
             .then(() => $store.commit('handleLineChartData'))
             .then(() => $store.commit('handleProgressData'))
