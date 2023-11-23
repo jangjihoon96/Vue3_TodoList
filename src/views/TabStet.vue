@@ -2,6 +2,7 @@
   <div class="container">
     <div class="chartContent">
       <LineChart />
+      <DonutChart />
       <div
         class="data-none"
         v-if="$store.state.lineChartCategories.length === 0"
@@ -16,10 +17,12 @@
 
 <script>
 import LineChart from "../components/LineChart.vue";
+import DonutChart from "../components/DonutChart.vue";
 export default {
   name: "TabStet",
   components: {
     LineChart,
+    DonutChart,
   },
 };
 </script>
@@ -40,9 +43,9 @@ export default {
 }
 .data-none-title {
   position: absolute;
-  top: 50%;
+  top: 140px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   font-size: 18px;
 }
 </style>

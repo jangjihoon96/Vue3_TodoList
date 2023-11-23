@@ -18,6 +18,7 @@ const store = createStore({
       sortTodo: [],
       lineChartCategories: [],
       lineChartData: [],
+      donutChartData: [0, 0, 0],
     };
   },
   mutations: {
@@ -149,6 +150,24 @@ const store = createStore({
       }, {});
       state.lineChartCategories = [...Object.keys(countedDates)];
       state.lineChartData = [...Object.values(countedDates)];
+    },
+    handleProgressData(state) {
+      const originData = state.todo;
+
+      let countBefore = 0;
+      let countProgress = 0;
+      let countComplete = 0;
+
+      originData.forEach((data) => {
+        if (data.progress === "진행전") {
+          countBefore++;
+        } else if (data.progress === "진행중") {
+          countProgress++;
+        } else if (data.progress === "완료") {
+          countComplete++;
+        }
+      });
+      state.donutChartData = [countBefore, countProgress, countComplete];
     },
   },
 });

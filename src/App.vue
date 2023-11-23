@@ -21,6 +21,7 @@
             .push('/stet')
             .then(() => $store.commit('handleTabStet'))
             .then(() => $store.commit('handleLineChartData'))
+            .then(() => $store.commit('handleProgressData'))
         "
       >
         통계 탭
