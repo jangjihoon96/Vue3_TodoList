@@ -19,6 +19,8 @@ const store = createStore({
       lineChartCategories: [],
       lineChartData: [],
       donutChartData: [0, 0, 0],
+      filterTodo: [],
+      searchTerm: "",
     };
   },
   mutations: {
@@ -29,8 +31,6 @@ const store = createStore({
       state.tab = 2;
     },
     handleCategory(state, payload) {
-      console.log(state.category);
-      console.log(payload);
       state.category = payload;
     },
     changeShowAddTodo(state) {
@@ -143,7 +143,6 @@ const store = createStore({
         return dateA - dateB;
       });
       state.sortTodo = [...arr];
-      console.log(arr);
       let countedDates = state.sortTodo.reduce((acc, curr) => {
         if (acc[curr.selectedDate]) {
           acc[curr.selectedDate] += 1;
@@ -172,6 +171,22 @@ const store = createStore({
         }
       });
       state.donutChartData = [countBefore, countProgress, countComplete];
+    },
+    setSearchTerm(state, value) {
+      state.searchTerm = value;
+    },
+  },
+  getters: {
+    filteredItems: (state) => {
+      const searchTerm = state.searchTerm.trim().toLowerCase();
+
+      if (!searchTerm) {
+        return state.todo;
+      }
+
+      return state.todo.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm)
+      );
     },
   },
 });

@@ -19,7 +19,11 @@
           날짜
         </option>
       </select>
-      <input type="text" placeholder="검색어를 입력하세요." />
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="검색어를 입력하세요."
+      />
       <button>검색</button>
     </form>
     <div class="list-contents">
@@ -78,9 +82,118 @@
           취소
         </button>
       </form>
-      <ul class="todo-list">
+      <ul class="todo-list" v-if="$store.state.filterTodo.length === 0">
+        <li v-for="todos in filteredItems" :key="todos.id" class="todo-card">
+          <div
+            v-if="todos.edit === false"
+            class="todo-card-content"
+            @click="
+              $store.commit('handleOpenEdit', {
+                id: todos.id,
+                title: todos.title,
+                description: todos.description,
+                selectedDate: todos.selectedDate,
+              })
+            "
+          >
+            <h2 class="card-title contents-black">{{ todos.title }}</h2>
+            <p class="card-description contents-gray">
+              {{ todos.description }}
+            </p>
+            <span class="card-date contents-lightgray">{{
+              todos.selectedDate
+            }}</span>
+            <span
+              class="card-state"
+              :class="{
+                complete: todos.progress === '완료',
+                proceeding: todos.progress === '진행중',
+                before: todos.progress === '진행전',
+              }"
+              >{{ todos.progress }}</span
+            >
+          </div>
+          <form v-if="todos.edit === true" class="edit-todo">
+            <div class="vertical">
+              <input
+                type="text"
+                name="title"
+                class="edit-title"
+                placeholder="수정할 제목을 작성하세요."
+                :value="todos.title"
+                @change="
+                  $store.commit('handleEditTitle', {
+                    value: $event.target.value,
+                    id: todos.id,
+                    title: todos.title,
+                  })
+                "
+              />
+              <input
+                type="text"
+                name="description"
+                class="edit-description"
+                placeholder="수정할 설명을 작성하세요."
+                :value="todos.description"
+                @change="
+                  $store.commit('handleEditDescription', {
+                    value: $event.target.value,
+                    id: todos.id,
+                    description: todos.description,
+                  })
+                "
+              />
+            </div>
+            <span class="edit-date">
+              <div class="date-picker">
+                <input
+                  class="datejs-input"
+                  type="date"
+                  :value="todos.selectedDate"
+                  @input="
+                    $store.commit('updateDate', { event: $event, id: todos.id })
+                  "
+                />
+              </div>
+            </span>
+            <select
+              class="edit-state contents-primary"
+              v-model="todos.progress"
+            >
+              <option :value="`진행전`" :selected="todos.progress === '진행전'">
+                진행전
+              </option>
+              <option :value="`진행중`" :selected="todos.progress === '진행중'">
+                진행중
+              </option>
+              <option :value="`완료`" :selected="todos.progress === '완료'">
+                완료
+              </option>
+            </select>
+            <button
+              @click.prevent="
+                $store.commit('handleEditComplete', {
+                  id: todos.id,
+                  selectedDate: todos.selectedDate,
+                })
+              "
+              class="edit-complete-button in-edit-button contents-white"
+            >
+              수정완료
+            </button>
+            <button
+              @click="$store.commit('handleCancelEdit', { id: todos.id })"
+              class="edit-cancel-button in-edit-button contents-white"
+            >
+              취소
+            </button>
+          </form>
+          <span class="line" aria-hidden="true"></span>
+        </li>
+      </ul>
+      <ul class="todo-list" v-if="$store.state.filterTodo.length !== 0">
         <li
-          v-for="todos in $store.state.todo"
+          v-for="todos in $store.state.filterTodo"
           :key="todos.id"
           class="todo-card"
         >
@@ -197,6 +310,37 @@
 <script>
 export default {
   name: "TabList",
+  computed: {
+    searchTerm: {
+      get() {
+        return this.$store.state.searchTerm;
+      },
+      set(value) {
+        this.$store.commit("setSearchTerm", value);
+      },
+    },
+    filteredItems() {
+      const searchTerm = this.$store.state.searchTerm.trim().toLowerCase();
+      const items = this.$store.state.todo;
+      const category = this.$store.state.category;
+
+      if (!searchTerm) {
+        return items;
+      }
+
+      return items.filter((item) => {
+        if (category === "제목") {
+          return item.title.toLowerCase().includes(searchTerm);
+        } else if (category === "설명") {
+          return item.description.toLowerCase().includes(searchTerm);
+        } else if (category === "상태") {
+          return item.progress.toLowerCase().includes(searchTerm);
+        } else if (category === "날짜") {
+          return item.selectedDate.toLowerCase().includes(searchTerm);
+        }
+      });
+    },
+  },
 };
 </script>
 
