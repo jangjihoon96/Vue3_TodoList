@@ -58,8 +58,6 @@ button {
 .contents-primary {
   color: #ff8600;
 }
-.contents-secondary {
-}
 .contents-white {
   color: #ffffff;
 }
@@ -82,6 +80,7 @@ button {
   margin-top: 60px;
 }
 h1 {
+  font-size: 24px;
 }
 .tab {
   display: flex;
