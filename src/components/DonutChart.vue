@@ -98,10 +98,7 @@ export default {
         .enter()
         .append("text")
         .text((d, i) => {
-          console.log(d);
-          console.log(i);
           return titles[i];
-          // return data.length <= 2 && i < data.length ? titles[i] : titles[0];
         })
         .attr("transform", function (d) {
           const [x, y] = arc.centroid(d); // 각 섹션의 중심점
