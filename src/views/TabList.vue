@@ -172,7 +172,10 @@
             </select>
             <button
               @click.prevent="
-                $store.commit('handleEditComplete', { id: todos.id })
+                $store.commit('handleEditComplete', {
+                  id: todos.id,
+                  selectedDate: todos.selectedDate,
+                })
               "
               class="edit-complete-button in-edit-button contents-white"
             >

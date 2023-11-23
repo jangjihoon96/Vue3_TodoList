@@ -118,12 +118,16 @@ const store = createStore({
       state.editDescription = payload.value;
     },
     handleEditComplete(state, payload) {
-      const { id } = payload;
+      const { id, selectedDate } = payload;
       const todoToEdit = state.todo.find((todo) => todo.id === id);
       if (todoToEdit) {
         todoToEdit.title = state.editTitle;
         todoToEdit.description = state.editDescription;
-        todoToEdit.selectedDate = state.editDate;
+        if (state.editDate === "") {
+          todoToEdit.selectedDate = selectedDate;
+        } else {
+          todoToEdit.selectedDate = state.editDate;
+        }
       }
       todoToEdit.edit = false;
     },
