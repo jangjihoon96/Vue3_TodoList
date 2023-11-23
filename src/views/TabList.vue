@@ -24,7 +24,6 @@
         v-model="searchTerm"
         placeholder="검색어를 입력하세요."
       />
-      <button>검색</button>
     </form>
     <div class="list-contents">
       <button
