@@ -81,6 +81,12 @@
           취소
         </button>
       </form>
+      <div
+        class="todo-none contents-lightgray"
+        v-if="$store.state.todo.length === 0"
+      >
+        할 일을 추가해보세요.
+      </div>
       <ul class="todo-list" v-if="$store.state.filterTodo.length === 0">
         <li v-for="todos in filteredItems" :key="todos.id" class="todo-card">
           <div
@@ -382,23 +388,8 @@ export default {
   border: 1px solid #dddddd;
   border-radius: 4px;
   font-size: 12px;
-  padding: 0 92px 0 12px;
+  padding: 0 12px 0 12px;
   transition: all 0.2s;
-}
-.filter-form button {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 80px;
-  height: 30px;
-  background-color: rgba(118, 118, 118, 1);
-  border: 1px solid rgba(118, 118, 118, 1);
-  border-radius: 0 4px 4px 0;
-  color: #ffffff;
-  translate: all 0.2s;
-}
-.filter-form button:hover {
-  background-color: rgba(118, 118, 118, 0.8);
 }
 .filter-form input:hover {
   border: 1px solid #aaaeb7;
@@ -484,8 +475,10 @@ export default {
 .input-card .cancel-button:hover {
   background-color: rgba(118, 118, 118, 0.8);
 }
-/* .todo-card {
-} */
+.todo-none {
+  padding: 40px 0;
+  font-size: 16px;
+}
 .todo-card-content {
   display: flex;
   flex-flow: column nowrap;
