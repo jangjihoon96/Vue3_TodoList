@@ -8,7 +8,7 @@
         @click="
           $router
             .push('/Vue3_Todolist_Deploy')
-            .then(() => $store.commit('handleTabList'))
+            .then(() => $store.commit('handleTabChange', { tabValue: 1 }))
         "
       >
         목록 탭
@@ -21,7 +21,7 @@
         @click="
           $router
             .push('/Vue3_Todolist_Deploy/stet')
-            .then(() => $store.commit('handleTabStet'))
+            .then(() => $store.commit('handleTabChange', { tabValue: 2 }))
             .then(() => $store.commit('handleLineChartData'))
             .then(() => $store.commit('handleProgressData'))
         "

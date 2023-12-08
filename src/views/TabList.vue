@@ -28,7 +28,7 @@
     <div class="list-contents">
       <button
         v-if="$store.state.showAddTodo == false"
-        @click="$store.commit('changeShowAddTodo')"
+        @click="$store.commit('toggleAddTodo', { toggle: true })"
         class="add-todo-button contents-white"
       >
         &#43;
@@ -76,7 +76,7 @@
         </button>
         <button
           class="cancel-button button contents-white"
-          @click="$store.commit('changeHideAddTodo')"
+          @click="$store.commit('toggleAddTodo', { toggle: false })"
         >
           취소
         </button>

@@ -24,31 +24,19 @@ const store = createStore({
     };
   },
   mutations: {
-    handleTabList(state) {
-      state.tab = 1;
-    },
-    handleTabStet(state) {
-      state.tab = 2;
+    handleTabChange(state, payload) {
+      state.tab = payload.tabValue;
     },
     handleCategory(state, payload) {
       state.category = payload;
     },
-    changeShowAddTodo(state) {
-      state.showAddTodo = true;
+    toggleAddTodo(state, payload) {
+      state.showAddTodo = payload.toggle;
     },
-    changeHideAddTodo(state) {
-      state.showAddTodo = false;
-    },
-    handleTitleValue(state, payload) {
-      if (payload === "") {
-        state.titleValue = "제목을 입력하세요.";
-      }
+    handleTitleValue(state, payload = "제목을 입력하세요.") {
       state.titleValue = payload;
     },
-    handleDescriptionValue(state, payload) {
-      if (payload === "") {
-        state.descriptionValue = "설명을 입력하세요.";
-      }
+    handleDescriptionValue(state, payload = "설명을 입력하세요.") {
       state.descriptionValue = payload;
     },
     handleProgressValue(state, payload) {
